@@ -1,0 +1,3 @@
+une interface pour ouvrir les fichiers de clotures, 
+supprimer une ligne, 
+modifier un champ
