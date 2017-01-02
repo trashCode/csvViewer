@@ -30,15 +30,18 @@ namespace CSVViewer
     {
         string currentFilePath = null;
         bool modified = false;
+        public bool Modified
+        {
+            get { return modified; }
+            set { modified = value; }
+        }
 
         public MainWindow()
         {
             InitializeComponent();
-            
+            this.DataContext = this;
+
             Encoding encoding = System.Text.Encoding.Default;
-            //DataTable data = GetDataTableFromCSVFile(testFile, false,encoding);
-            //statusTB.Text = data.Rows.Count.ToString();
-            //mainGrid.ItemsSource = data.DefaultView;
             mainGrid.LoadingRow += loadRow_Rorganis;
         }
 
@@ -60,7 +63,6 @@ namespace CSVViewer
                 }
             }
         }
-
 
         private static DataTable Csv2DataTable(string csv_file_path, bool FirstLineIsHeader,Encoding encoding)
         {
@@ -142,7 +144,7 @@ namespace CSVViewer
             if (openFileDialog.ShowDialog() == true)
             {
                 this.currentFilePath = openFileDialog.FileName;
-                this.modified = false;
+                this.Modified = false;
                 Encoding encoding = System.Text.Encoding.Default;
                 DataTable data = Csv2DataTable(openFileDialog.FileName, false, encoding);
                 statusTB.Text = data.Rows.Count.ToString() + " lignes chargées";
@@ -154,7 +156,7 @@ namespace CSVViewer
         private void Save(object sender, RoutedEventArgs e)
         {
             File.WriteAllText(currentFilePath, DataTable2Csv(((DataView)mainGrid.ItemsSource).ToTable(), System.Text.Encoding.Default));
-            modified = false; 
+            Modified = false; 
         }
 
         private void SaveAs(object sender, RoutedEventArgs e)
@@ -166,13 +168,14 @@ namespace CSVViewer
             if (saveFileDialog.ShowDialog() == true)
                 File.WriteAllText(saveFileDialog.FileName, DataTable2Csv(((DataView)mainGrid.ItemsSource).ToTable(), System.Text.Encoding.Default));
 
-            modified = false;
+            Modified = false;
             statusTB.Text = " Enregistré ";
         }
 
         //A LIRE : https://msdn.microsoft.com/fr-fr/library/office/ff965871(v=office.14).aspx
         //then : http://stackoverflow.com/questions/5182767/microsoft-ace-oledb-12-0-csv-connectionstring
         //more struggle ! http://www.powershellmagazine.com/2015/05/12/natively-query-csv-files-using-sql-syntax-in-powershell/
+        //MVVM https://msdn.microsoft.com/en-us/magazine/dd419663.aspx
 
         private void About(object sender, RoutedEventArgs e)
         {
@@ -181,7 +184,20 @@ namespace CSVViewer
 
         private void Debug(object sender, RoutedEventArgs e)
         {
-            //MessageBox.Show( (DataSet)(mainGrid.DataContext).HasChanges() );
+            MessageBox.Show(Modified ? "modified = true" : "modified = false");
+
+        }
+
+        private void mainGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            infoTB.Text = DateTime.Now.ToString("hh:mm:ss") + " " +e.EditAction.ToString();
+
+            if (e.EditAction == DataGridEditAction.Commit)
+                Modified = true;
+                statusTB.Text = DateTime.Now.ToString("hh:mm:ss") + " " + e.EditAction.ToString();
+                
+
+
         }
 
     }//endClass MainWindows

@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CSVViewer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="Auto">
+        Title="CSV Viewer" Height="350" Width="Auto">
     <DockPanel LastChildFill="True">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_Fichier">
                 <MenuItem Header="_Ouvrir" Click="OpenFile"></MenuItem>
-                <MenuItem Header="_Enregistrer" Click="Save"></MenuItem>
-                <MenuItem Header="Enregistrer _sous..." Click="SaveAs"></MenuItem>
+                <MenuItem Header="_Enregistrer" Click="Save" IsEnabled="False"></MenuItem>
+                <MenuItem Header="Enregistrer _sous..." IsEnabled="{Binding Modified}" Click="SaveAs"></MenuItem>
             </MenuItem>
             <MenuItem Header="_?">
                 <MenuItem Header="_A propos" Click="About"></MenuItem>
@@ -27,7 +27,7 @@
             </StatusBarItem>
         </StatusBar>
 
-        <DataGrid Name="mainGrid" FontSize="13.333" EnableRowVirtualization="true" MaxWidth="1680">
+        <DataGrid Name="mainGrid" FontSize="13.333" EnableRowVirtualization="true" MaxWidth="1680" RowEditEnding="mainGrid_RowEditEnding" >
         </DataGrid>
 
     </DockPanel>
