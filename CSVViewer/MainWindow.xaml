@@ -11,10 +11,11 @@
             <MenuItem Header="_Fichier">
                 <MenuItem Header="_Ouvrir" Click="OpenFile"></MenuItem>
                 <MenuItem Header="_Enregistrer" Click="Save"></MenuItem>
-                <MenuItem Header="_Enregistrer sous..." Click="SaveAs"></MenuItem>
+                <MenuItem Header="Enregistrer _sous..." Click="SaveAs"></MenuItem>
             </MenuItem>
-            <MenuItem Header="_A propos">
-                Csv Viewer Version 0.1 par Grégory Fanton. CPAM du Rhone - 2016
+            <MenuItem Header="_?">
+                <MenuItem Header="_A propos" Click="About"></MenuItem>
+                <MenuItem Header="_Debug" Click="Debug"></MenuItem>
             </MenuItem>
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">
@@ -22,7 +23,7 @@
                 <TextBlock Name="statusTB"/>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
-                <TextBlock Name="infoTB"/>
+                <TextBlock Name="infoTB" Text="" />
             </StatusBarItem>
         </StatusBar>
 

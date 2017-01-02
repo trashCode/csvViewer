@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,7 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+//using System.Windows.Shapes;
 using System.Data.Odbc;
 using System.Data.OleDb;
 using System.Data;
@@ -27,10 +28,13 @@ namespace CSVViewer
     /// </summary>
     public partial class MainWindow : Window
     {
+        string currentFilePath = null;
+        bool modified = false;
+
         public MainWindow()
         {
             InitializeComponent();
-            string testFile = "D:\\temp\\incoming\\Rorganis20161021.csv";
+            
             Encoding encoding = System.Text.Encoding.Default;
             //DataTable data = GetDataTableFromCSVFile(testFile, false,encoding);
             //statusTB.Text = data.Rows.Count.ToString();
@@ -115,7 +119,6 @@ namespace CSVViewer
             return csvData;
         }
 
-
         private static string DataTable2Csv(DataTable dt, Encoding encoding)
         {
             StringBuilder sb = new StringBuilder();
@@ -128,11 +131,6 @@ namespace CSVViewer
             return sb.ToString();
         }
 
-        private static void WriteToDisk(string s)
-        {
-
-        }
-
         private void OpenFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -143,6 +141,8 @@ namespace CSVViewer
 
             if (openFileDialog.ShowDialog() == true)
             {
+                this.currentFilePath = openFileDialog.FileName;
+                this.modified = false;
                 Encoding encoding = System.Text.Encoding.Default;
                 DataTable data = Csv2DataTable(openFileDialog.FileName, false, encoding);
                 statusTB.Text = data.Rows.Count.ToString() + " lignes chargées";
@@ -153,16 +153,36 @@ namespace CSVViewer
 
         private void Save(object sender, RoutedEventArgs e)
         {
-
+            File.WriteAllText(currentFilePath, DataTable2Csv(((DataView)mainGrid.ItemsSource).ToTable(), System.Text.Encoding.Default));
+            modified = false; 
         }
 
         private void SaveAs(object sender, RoutedEventArgs e)
         {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Fichiers Csv (*.csv)|*.csv|Tous (*.*)|*.*";
+            saveFileDialog.FileName = Path.GetFileName(currentFilePath);
 
+            if (saveFileDialog.ShowDialog() == true)
+                File.WriteAllText(saveFileDialog.FileName, DataTable2Csv(((DataView)mainGrid.ItemsSource).ToTable(), System.Text.Encoding.Default));
+
+            modified = false;
+            statusTB.Text = " Enregistré ";
         }
 
         //A LIRE : https://msdn.microsoft.com/fr-fr/library/office/ff965871(v=office.14).aspx
         //then : http://stackoverflow.com/questions/5182767/microsoft-ace-oledb-12-0-csv-connectionstring
         //more struggle ! http://www.powershellmagazine.com/2015/05/12/natively-query-csv-files-using-sql-syntax-in-powershell/
+
+        private void About(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("CSV Viewer 1.0\n Utilitaire de visualisation des fichiers csv \n G.Fanton 2016");
+        }
+
+        private void Debug(object sender, RoutedEventArgs e)
+        {
+            //MessageBox.Show( (DataSet)(mainGrid.DataContext).HasChanges() );
+        }
+
     }//endClass MainWindows
 }//end namespace
